@@ -1,0 +1,436 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ivory: #f4f0e8;
+  --color-espresso: #28231f;
+  --color-taupe: #b8ab9b;
+  --color-olive: #737664;
+  --color-olive-deep: #5a5d4d;
+  --color-sand: #ded4c5;
+  --color-ink-soft: #5e5750;
+  --color-line: #d3c9ba;
+
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: "Manrope Variable", "Helvetica Neue", Arial, sans-serif;
+
+  --ease-atelier: cubic-bezier(0.2, 0.7, 0.1, 1);
+}
+
+/* ---------- Base ---------- */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-espresso);
+  color: var(--color-ivory);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-olive-deep);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.on-dark :focus-visible,
+.on-dark:focus-visible {
+  outline-color: var(--color-sand);
+}
+
+[id] {
+  scroll-margin-top: 6rem;
+}
+
+/* ---------- Typography ---------- */
+.display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: -0.012em;
+  line-height: 0.9;
+  hyphens: none;
+}
+
+.display-xl {
+  font-size: clamp(2.7rem, 8.8vw, 9.5rem);
+}
+
+.display-lg {
+  font-size: clamp(2.5rem, 8vw, 7.75rem);
+}
+
+.display-md {
+  font-size: clamp(2.2rem, 5.6vw, 5.25rem);
+}
+
+.display-sm {
+  font-size: clamp(1.9rem, 3.6vw, 3.25rem);
+}
+
+.display em,
+.serif-italic {
+  font-style: italic;
+  text-transform: none;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+/* ---------- Links & buttons ---------- */
+.arrow {
+  display: inline-block;
+  transition: transform 0.45s var(--ease-atelier);
+}
+
+a:hover .arrow-ne,
+button:hover .arrow-ne,
+a:focus-visible .arrow-ne {
+  transform: translate(3px, -3px);
+}
+
+a:hover .arrow-s,
+a:focus-visible .arrow-s {
+  transform: translateY(4px);
+}
+
+a:hover .arrow-e,
+button:hover .arrow-e,
+a:focus-visible .arrow-e {
+  transform: translateX(4px);
+}
+
+.nav-link {
+  position: relative;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease-atelier);
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after,
+.nav-link[aria-current="page"]::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---------- Image focal points (intentional mobile / desktop crops) ---------- */
+.focal {
+  object-position: var(--pos-m, 50% 50%);
+}
+
+@media (min-width: 768px) {
+  .focal {
+    object-position: var(--pos-d, 50% 50%);
+  }
+}
+
+/* ---------- Scroll reveals (only hidden when JS is active) ---------- */
+[data-reveal] {
+  transition:
+    opacity 1s var(--ease-atelier),
+    transform 1.1s var(--ease-atelier);
+  transition-delay: var(--delay, 0ms);
+}
+
+.js [data-reveal="fade"]:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+.js [data-reveal="soft"]:not(.is-visible) {
+  opacity: 0;
+}
+
+.js [data-reveal="image"]:not(.is-visible) {
+  opacity: 0;
+  transform: scale(1.03);
+}
+
+.mask-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+
+.mask-line > span {
+  display: block;
+  transition: transform 1.15s var(--ease-atelier);
+  transition-delay: calc(var(--delay, 0ms) + var(--i, 0) * 110ms);
+}
+
+.js [data-reveal="mask"]:not(.is-visible) .mask-line > span {
+  transform: translateY(108%);
+}
+
+/* ---------- Hero opening (CSS-only, plays once) ---------- */
+@keyframes hero-image {
+  from {
+    opacity: 0;
+    transform: scale(1.07);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes line-up {
+  from {
+    transform: translateY(108%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes cue {
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  45% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+  55% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
+}
+
+.hero-image {
+  animation: hero-image 2.2s var(--ease-atelier) both;
+}
+
+.hero-line > span {
+  display: block;
+  animation: line-up 1.2s var(--ease-atelier) both;
+  animation-delay: calc(0.45s + var(--i, 0) * 0.13s);
+}
+
+.hero-follow {
+  animation: fade-up 1s var(--ease-atelier) both;
+  animation-delay: var(--delay, 1s);
+}
+
+/* Scroll cue: plays three times, then rests (no endless motion) */
+.scroll-cue-line {
+  animation: cue 2.4s var(--ease-atelier) 1.8s 3 both;
+}
+
+.page-enter {
+  animation: fade-in 0.55s ease-out both;
+}
+
+/* ---------- Paper alignment signature ---------- */
+.sheet {
+  transition:
+    transform 1.6s var(--ease-atelier),
+    opacity 1.2s var(--ease-atelier),
+    background-color 1.2s ease;
+  transition-delay: calc(350ms + var(--order, 0) * 120ms);
+  will-change: transform;
+}
+
+.js .sheets:not(.is-visible) .sheet {
+  transform: translate(var(--tx, 0), var(--ty, 0)) rotate(var(--rot, 0deg));
+}
+
+.crop-mark {
+  transition: opacity 0.9s ease 1.9s;
+}
+
+.js .sheets:not(.is-visible) .crop-mark {
+  opacity: 0;
+}
+
+.sheets-label {
+  transition:
+    opacity 0.8s ease,
+    color 0.8s ease;
+}
+
+.js .sheets:not(.is-visible) .sheets-label-done {
+  opacity: 0;
+}
+
+.js .sheets.is-visible .sheets-label-draft {
+  opacity: 0;
+  transition-delay: 1.2s;
+}
+
+.sheets-label-done {
+  transition-delay: 2s;
+}
+
+/* ---------- Tone scope: smooth section background changes ---------- */
+.tone-scope {
+  --bg: var(--color-ivory);
+  --fg: var(--color-espresso);
+  --fg-soft: var(--color-ink-soft);
+  --rule: var(--color-line);
+  background: var(--bg);
+  color: var(--fg);
+  transition:
+    background-color 1.1s ease,
+    color 1.1s ease;
+}
+
+.tone-scope[data-tone="sand"] {
+  --bg: var(--color-sand);
+  --fg-soft: #4f4943;
+  --rule: #c4b8a6;
+}
+
+.tone-scope[data-tone="espresso"] {
+  --bg: var(--color-espresso);
+  --fg: var(--color-ivory);
+  --fg-soft: #cfc6b8;
+  --rule: #4a423b;
+}
+
+/* ---------- Product image transition ---------- */
+.product-frame .img-secondary {
+  opacity: 0;
+  transition:
+    opacity 0.9s var(--ease-atelier),
+    transform 1.4s var(--ease-atelier);
+  transform: scale(1.04);
+}
+
+.product-frame .img-primary {
+  transition: transform 1.4s var(--ease-atelier);
+}
+
+.product-frame:hover .img-secondary,
+a:focus-visible .product-frame .img-secondary {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.product-frame:hover .img-primary {
+  transform: scale(1.03);
+}
+
+/* ---------- Forms ---------- */
+.field-input {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #a89b8a;
+  padding: 0.85rem 0 0.7rem;
+  font-size: 1.05rem;
+  color: var(--color-espresso);
+  border-radius: 0;
+  transition: border-color 0.3s ease;
+}
+
+.field-input:focus {
+  outline: none;
+  border-bottom-color: var(--color-espresso);
+  box-shadow: 0 1px 0 0 var(--color-espresso);
+}
+
+.field-input[aria-invalid="true"] {
+  border-bottom-color: #8c3b2b;
+}
+
+select.field-input {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 12px) 55%,
+    calc(100% - 7px) 55%;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2rem;
+}
+
+textarea.field-input {
+  resize: vertical;
+  min-height: 8rem;
+  line-height: 1.6;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .js [data-reveal]:not(.is-visible),
+  .js [data-reveal="mask"]:not(.is-visible) .mask-line > span,
+  .js .sheets:not(.is-visible) .sheet {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .scroll-cue-line {
+    animation: none !important;
+  }
+}
