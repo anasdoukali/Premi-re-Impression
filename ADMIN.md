@@ -6,6 +6,7 @@ Espace d’équipe : `/admin` (non indexé, protégé par mot de passe).
 
 | Variable | Rôle |
 | --- | --- |
+| `DATABASE_URL` | URL de connexion PostgreSQL. Obligatoire pour le build et la production. |
 | `ADMIN_PASSWORD` | Mot de passe de connexion. **Obligatoire avant la mise en ligne.** |
 | `ADMIN_SESSION_SECRET` | Clé de signature du cookie de session (chaîne aléatoire longue). |
 
@@ -35,6 +36,12 @@ Toute modification est répercutée immédiatement sur le site public (revalidat
 | `settings` | Réglages du site (ligne unique, clé `site`). |
 
 En cas d’indisponibilité de la base, le site public retombe sur le catalogue et les réglages par défaut du code.
+
+## Déploiement
+
+Sur Vercel, ajoutez les variables dans **Settings > Environment Variables**, puis redéployez le projet.
+Pour une base Render utilisée depuis Vercel, utilisez l’URL PostgreSQL externe comme valeur de `DATABASE_URL`.
+Ne versionnez jamais la vraie URL de base de données : elle contient le mot de passe.
 
 ## Limites actuelles
 
