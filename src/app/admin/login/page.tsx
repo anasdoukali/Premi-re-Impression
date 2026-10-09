@@ -21,8 +21,8 @@ export default async function LoginPage() {
         <LoginForm />
       </div>
       {demo && (
-        <div className="mt-10 border border-[#8c3b2b]/40 bg-[#8c3b2b]/5 p-4 text-sm leading-relaxed text-ink-soft">
-          <p className="font-semibold text-[#8c3b2b]">Mot de passe de démonstration actif</p>
+        <div className="mt-10 border border-brand-brown/40 bg-brand-brown/5 p-4 text-sm leading-relaxed text-ink-soft">
+          <p className="font-semibold text-espresso">Mot de passe de démonstration actif</p>
           <p className="mt-2">
             Aucune variable <code className="font-mono text-xs">ADMIN_PASSWORD</code> n’est définie. Le mot de passe
             temporaire est <strong className="text-espresso">{demoPassword()}</strong>. Définissez{" "}

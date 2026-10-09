@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/db";
+import { frontendOnly } from "@/server/frontend-mode";
 import { projectRequests } from "@/db/schema";
 import { projectTypes } from "@/config/site";
 
@@ -24,6 +24,12 @@ function makeReference() {
 }
 
 export async function POST(req: Request) {
+  if (frontendOnly) {
+    return NextResponse.json(
+      { error: "Mode aperçu : les demandes ne sont pas enregistrées." },
+      { status: 503 },
+    );
+  }
   let body: Body;
   try {
     body = (await req.json()) as Body;
@@ -61,6 +67,7 @@ export async function POST(req: Request) {
 
   try {
     const reference = makeReference();
+    const { db } = await import("@/db");
     await db.insert(projectRequests).values({
       reference,
       kind: kind!,

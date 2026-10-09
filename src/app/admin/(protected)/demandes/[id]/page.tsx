@@ -73,7 +73,7 @@ export default async function RequestDetail({ params }: { params: Promise<{ id: 
                 {request.attachmentName}
                 {request.attachmentSize ? ` · ${Math.round(request.attachmentSize / 1024)} Ko` : ""}
                 {!settings.services.fileUpload && (
-                  <span className="mt-1 block text-xs text-[#8c3b2b]">
+                  <span className="mt-1 block text-xs text-espresso">
                     Non transmis : le transfert de fichiers n’est pas activé. Le client doit encore vous l’envoyer.
                   </span>
                 )}

@@ -17,7 +17,7 @@ type Sheet = {
  */
 const sheets: Sheet[] = [
   { className: "inset-0 bg-sand", tx: "-6%", ty: "4%", rot: "-4deg", order: 0 },
-  { className: "inset-[5%] bg-ivory shadow-[0_30px_60px_-30px_rgba(40,35,31,0.35)]", tx: "7%", ty: "-3%", rot: "5deg", order: 1 },
+  { className: "inset-[5%] bg-ivory shadow-[0_30px_60px_-30px_rgba(75,63,42,0.35)]", tx: "7%", ty: "-3%", rot: "5deg", order: 1 },
   { className: "left-[12%] right-[12%] top-[12%] h-[38%] bg-olive", tx: "-14%", ty: "9%", rot: "-6deg", order: 2 },
   { className: "left-[12%] top-[56%] h-[5.5%] w-[62%] bg-espresso", tx: "18%", ty: "-12%", rot: "3deg", order: 3 },
   { className: "left-[12%] top-[64%] h-[5.5%] w-[44%] bg-espresso", tx: "-10%", ty: "14%", rot: "-4deg", order: 4 },

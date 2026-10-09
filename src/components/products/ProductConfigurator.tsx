@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { OptionGroup, Product } from "@/data/products";
-import { formatPrice } from "@/data/products";
+import { configurationPrice, money } from "@/data/pricing";
 import { useSettings } from "@/components/SettingsProvider";
 import { useCart, type CartSelection } from "@/components/cart/CartProvider";
 import { FileField, formatBytes, type PickedFile } from "@/components/forms/FileField";
@@ -15,11 +16,13 @@ function OptionFieldset({
   value,
   onChange,
   step,
+  adjustments,
 }: {
   group: OptionGroup;
   value: string;
   onChange: (v: string) => void;
   step: number;
+  adjustments: (number | null)[];
 }) {
   const name = `opt-${group.id}`;
   const display = group.display ?? "pills";
@@ -38,7 +41,7 @@ function OptionFieldset({
       </legend>
 
       <div className={`mt-5 ${display === "list" ? "grid gap-2" : "flex flex-wrap gap-2.5"}`}>
-        {group.choices.map((c) => (
+        {group.choices.map((c, index) => (
           <label key={c.value} className="relative cursor-pointer">
             <input
               type="radio"
@@ -56,11 +59,13 @@ function OptionFieldset({
             ) : display === "list" ? (
               <span className="flex min-h-14 items-center justify-between gap-4 border border-line px-5 py-3 transition-colors duration-300 hover:border-espresso/60 peer-checked:border-espresso peer-checked:bg-espresso peer-checked:text-ivory peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-olive-deep">
                 <span className="font-medium">{c.label}</span>
+                {adjustments[index] != null && <span className="text-xs opacity-75">{adjustments[index] === 0 ? "Inclus" : `${adjustments[index]! > 0 ? "+" : "−"} ${money(Math.abs(adjustments[index]!))}`}</span>}
                 {c.hint && <span className="text-xs opacity-75">{c.hint}</span>}
               </span>
             ) : (
               <span className="inline-flex min-h-12 min-w-12 flex-col items-center justify-center border border-line px-4 py-2 text-sm transition-colors duration-300 hover:border-espresso/60 peer-checked:border-espresso peer-checked:bg-espresso peer-checked:text-ivory peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-olive-deep">
                 <span className="font-medium">{c.label}</span>
+                {adjustments[index] != null && <span className="text-xs opacity-75">{adjustments[index] === 0 ? "Inclus" : `${adjustments[index]! > 0 ? "+" : "−"} ${money(Math.abs(adjustments[index]!))}`}</span>}
                 {c.hint && <span className="text-[0.65rem] uppercase tracking-[0.12em] opacity-70">{c.hint}</span>}
               </span>
             )}
@@ -85,6 +90,16 @@ export function ProductConfigurator({ product }: { product: Product }) {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [added, setAdded] = useState(false);
+  const [priceBarVisible, setPriceBarVisible] = useState(false);
+  const price = configurationPrice(product, choices, assistance);
+
+  useEffect(() => {
+    const update = () => setPriceBarVisible(window.scrollY > 100);
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
+
   const confirmRef = useRef<HTMLDivElement>(null);
   const fileFieldsetRef = useRef<HTMLFieldSetElement>(null);
 
@@ -122,6 +137,7 @@ export function ProductConfigurator({ product }: { product: Product }) {
     add({
       slug: product.slug,
       name: product.name,
+      pricing: price ?? undefined,
       selections,
       file:
         fileMode === "ready" && file
@@ -139,11 +155,48 @@ export function ProductConfigurator({ product }: { product: Product }) {
 
   return (
     <div>
+      {priceBarVisible && createPortal(
+        <section aria-label="Prix et disponibilité du produit" data-active="true" className="product-price-bar">
+          <div className="border-b border-line">
+            <div className="mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-16 flex min-h-[74px] items-center justify-between gap-5 py-3">
+              <Link href={`/solutions/${product.slug}`} className="text-sm font-semibold tracking-tight sm:text-xl">{product.name}</Link>
+              <div className="text-right leading-normal">
+                <p className="text-sm font-semibold tabular-nums sm:text-lg">{price ? `Total ${money(price.total, price.currency)}` : "Tarif sur devis"}</p>
+                <p className="mt-0.5 text-xs sm:text-sm">{price?.preview ? "Prix indicatif · à confirmer" : "Votre configuration"}</p>
+              </div>
+            </div>
+          </div>
+          <div className="mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-16 flex min-h-[50px] flex-wrap items-center justify-end gap-x-5 gap-y-2 py-3 text-xs sm:text-sm">
+            <span className="inline-flex items-center gap-2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9M12 3v5l4 2M12 3l5 2" /></svg>
+              {product.express ? "Express selon le projet" : "Délai à confirmer"}
+            </span>
+            <span className="inline-flex items-center gap-2 font-semibold">
+              <svg width="24" height="22" viewBox="0 0 26 24" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true"><path d="M2 5h14v13H2zM16 10h4l4 5v3h-8" /><circle cx="7" cy="19" r="2.5" fill="white" /><circle cx="20" cy="19" r="2.5" fill="white" /></svg>
+              Fabrication à la demande
+            </span>
+            <span className="hidden h-5 w-px bg-line sm:block" aria-hidden="true" />
+            <span className="inline-flex items-center gap-2">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" aria-hidden="true"><path d="M5 8h14l-1 13H6L5 8Z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></svg>
+              Retrait à la boutique
+            </span>
+          </div>
+        </section>, document.body,
+      )}
+      <div className="mb-8 border-t border-line pt-6" aria-live="polite" aria-atomic="true">
+        <p className="text-2xl font-semibold tabular-nums">{price ? money(price.total, price.currency) : "Sur devis"}</p>
+        <p className="mt-2 text-xs text-ink-soft">{price?.preview ? "Prix de démonstration — tarif PIS à confirmer." : "Prix de votre configuration."}</p>
+      </div>
       <div className="space-y-8">
         {product.options.map((g) => (
           <OptionFieldset
             key={g.id}
             group={g}
+            adjustments={g.choices.map((c) => {
+              const candidate = configurationPrice(product, { ...choices, [g.id]: c.value }, assistance);
+              const base = configurationPrice(product, { ...choices, [g.id]: g.choices[0].value }, assistance);
+              return candidate && base ? Math.round((candidate.total - base.total) * 100) / 100 : null;
+            })}
             step={++step}
             value={choices[g.id]}
             onChange={(v) => {
@@ -217,11 +270,11 @@ export function ProductConfigurator({ product }: { product: Product }) {
             <input
               type="checkbox"
               checked={assistance}
-              onChange={(e) => setAssistance(e.target.checked)}
+              onChange={(e) => { setAssistance(e.target.checked); setAdded(false); }}
               className="mt-1 h-5 w-5 shrink-0 accent-espresso"
             />
             <span>
-              <span className="block font-medium">Je souhaite un accompagnement graphique</span>
+              <span className="block font-medium">Je souhaite un accompagnement graphique{price?.preview ? " (+45 MAD)" : ""}</span>
               <span className="mt-1 block text-sm text-ink-soft">Mise en page, correction ou amélioration de votre fichier, avant impression.</span>
             </span>
           </label>
@@ -258,7 +311,7 @@ export function ProductConfigurator({ product }: { product: Product }) {
           </div>
           <div className="flex justify-between gap-6 py-3">
             <dt className="text-ivory/70">Prix</dt>
-            <dd className="text-right">{product.price ? formatPrice(product.price) : "Confirmé sur devis"}</dd>
+            <dd className="text-right">{price ? `${money(price.total, price.currency)}${price.preview ? " (démonstration)" : ""}` : "Confirmé sur devis"}</dd>
           </div>
         </dl>
 

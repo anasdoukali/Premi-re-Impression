@@ -51,7 +51,7 @@ export default async function CataloguePage() {
                   {r.priceFromCents != null ? `dès ${(r.priceFromCents / 100).toFixed(2)} € ${r.priceUnit}` : "sur devis"}
                 </td>
                 <td className="px-4 py-3">
-                  {r.published ? "Publié" : <span className="text-[#8c3b2b]">Masqué</span>}
+                  {r.published ? "Publié" : <span className="text-espresso">Masqué</span>}
                   {r.featured && <span className="block text-xs text-ink-soft">Mis en avant</span>}
                 </td>
                 <td className="px-4 py-3">

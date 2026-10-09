@@ -13,9 +13,9 @@ export function Hero() {
       {/* Soft ivory veil where the headline sits — preserves the photograph elsewhere */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(180deg,rgba(244,240,232,0.82)_0%,rgba(244,240,232,0.55)_38%,rgba(244,240,232,0)_62%)] md:bg-[linear-gradient(100deg,rgba(244,240,232,0.86)_0%,rgba(244,240,232,0.6)_34%,rgba(244,240,232,0)_60%)]"
+        className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.82)_0%,rgba(255,255,255,0.55)_38%,rgba(255,255,255,0)_62%)] md:bg-[linear-gradient(100deg,rgba(255,255,255,0.86)_0%,rgba(255,255,255,0.6)_34%,rgba(255,255,255,0)_60%)]"
       />
-      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(0deg,rgba(40,35,31,0.35),rgba(40,35,31,0))]" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1/3 bg-[linear-gradient(0deg,rgba(75,63,42,0.35),rgba(75,63,42,0))]" />
 
       <div className="relative mx-auto flex h-full max-w-[1600px] flex-col justify-between px-5 pb-10 pt-32 sm:px-8 md:pb-14 md:pt-40 lg:px-12">
         <div>

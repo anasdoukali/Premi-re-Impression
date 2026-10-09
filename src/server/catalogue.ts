@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { asc, eq } from "drizzle-orm";
-import { db } from "@/db";
+import { frontendOnly } from "@/server/frontend-mode";
 import { products as productsTable, type ProductRow } from "@/db/schema";
 import { images, type ImageKey } from "@/data/images";
 import {
@@ -39,6 +39,7 @@ export function parseOptions(value: unknown): OptionGroup[] {
           value,
           label: cl,
           hint: typeof ch.hint === "string" ? ch.hint : undefined,
+          priceAdjustment: typeof ch.priceAdjustment === "number" && Number.isFinite(ch.priceAdjustment) ? ch.priceAdjustment : undefined,
           swatch: typeof ch.swatch === "string" ? ch.swatch : undefined,
         };
       })
@@ -71,6 +72,7 @@ let seeding: Promise<void> | null = null;
 
 /** Fills the catalogue table from the bundled data the first time it is empty. */
 async function ensureSeeded() {
+  const { db } = await import("@/db");
   if (seeding) return seeding;
   seeding = (async () => {
     const existing = await db.select({ id: productsTable.id }).from(productsTable).limit(1);
@@ -107,7 +109,9 @@ async function ensureSeeded() {
 
 /** Published products for the public site. Falls back to bundled data on failure. */
 export const listProducts = cache(async (): Promise<Product[]> => {
+  if (frontendOnly) return seedProducts;
   try {
+    const { db } = await import("@/db");
     await ensureSeeded();
     const rows = await db
       .select()
@@ -124,11 +128,13 @@ export const listProducts = cache(async (): Promise<Product[]> => {
 
 /** Every product, published or not — administration only. */
 export async function listAllProducts(): Promise<ProductRow[]> {
+  const { db } = await import("@/db");
   await ensureSeeded();
   return db.select().from(productsTable).orderBy(asc(productsTable.position), asc(productsTable.id));
 }
 
 export async function getProductRow(id: number): Promise<ProductRow | undefined> {
+  const { db } = await import("@/db");
   const rows = await db.select().from(productsTable).where(eq(productsTable.id, id)).limit(1);
   return rows[0];
 }

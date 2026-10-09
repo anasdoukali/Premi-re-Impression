@@ -22,7 +22,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (!(await isAuthenticated())) redirect("/admin/login");
 
   return (
-    <div className="min-h-screen bg-[#faf8f4]">
+    <div className="min-h-screen bg-ivory">
       <header className="border-b border-line bg-ivory">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-4">
           <div>
@@ -57,7 +57,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       </header>
 
       {isDemoPassword() && (
-        <p className="bg-[#8c3b2b] px-5 py-2 text-center text-xs text-ivory">
+        <p className="bg-brand-brown px-5 py-2 text-center text-xs text-ivory">
           Mot de passe de démonstration actif — définissez ADMIN_PASSWORD et ADMIN_SESSION_SECRET avant la mise en ligne.
         </p>
       )}

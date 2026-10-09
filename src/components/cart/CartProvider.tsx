@@ -12,6 +12,7 @@ export type CartItem = {
   file: { status: "selected"; name: string; size: number } | { status: "not-ready"; note: string } | { status: "none" };
   assistance: boolean;
   notes: string;
+  pricing?: { total: number; currency: string; preview: boolean; quantity: number };
   addedAt: number;
 };
 

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCart } from "@/components/cart/CartProvider";
 import { formatBytes } from "@/components/forms/FileField";
 import { ArrowLink } from "@/components/ui/ArrowLink";
+import { money } from "@/data/pricing";
 import { images } from "@/data/images";
 import { getProduct, type Product } from "@/data/products";
 
@@ -83,7 +84,7 @@ export function CartView({ products = [] }: { products?: Product[] }) {
                     </div>
                   )}
                 </dl>
-                <p className="mt-4 text-sm font-semibold">Prix confirmé sur devis</p>
+                <p className="mt-4 text-sm font-semibold">{item.pricing ? `${money(item.pricing.total, item.pricing.currency)}${item.pricing.preview ? " · Prix de démonstration" : ""}` : "Prix confirmé sur devis"}</p>
               </div>
             </li>
           );
@@ -97,8 +98,14 @@ export function CartView({ products = [] }: { products?: Product[] }) {
             {items.length} article{items.length > 1 ? "s" : ""}
           </p>
           <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-            Les tarifs en ligne ne sont pas encore publiés : le prix et le délai vous sont confirmés avant toute production.
+            Le prix et le délai vous sont confirmés avant toute production. Les prix de démonstration sont indicatifs.
           </p>
+          {items.every((item) => item.pricing) && (
+            <p className="mt-6 flex justify-between gap-4 font-semibold">
+              <span>Total{items.some((item) => item.pricing?.preview) ? " indicatif" : ""}</span>
+              <span>{money(items.reduce((sum, item) => sum + (item.pricing?.total ?? 0), 0))}</span>
+            </p>
+          )}
           <ArrowLink href="/commande" arrow="e" className="mt-8 w-full">
             Passer à la commande
           </ArrowLink>

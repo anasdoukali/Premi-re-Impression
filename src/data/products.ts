@@ -23,7 +23,7 @@ export const categoryLabel: Record<Category, string> = {
   signaletique: "Signalétique",
 };
 
-export type Choice = { value: string; label: string; hint?: string; swatch?: string };
+export type Choice = { value: string; label: string; hint?: string; swatch?: string; priceAdjustment?: number };
 
 export type OptionGroup = {
   id: string;
@@ -32,7 +32,7 @@ export type OptionGroup = {
   choices: Choice[];
 };
 
-export type Price = { from: number; currency: "EUR"; unit: string };
+export type Price = { from: number; currency: "EUR" | "MAD"; unit: string; assistanceFee?: number };
 
 export type Product = {
   slug: string;

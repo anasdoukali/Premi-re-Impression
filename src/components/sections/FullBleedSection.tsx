@@ -34,7 +34,7 @@ export function FullBleedSection({ image, lines, headingId, headingAs = "h2", te
       )}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-[linear-gradient(0deg,rgba(32,28,25,0.86)_0%,rgba(32,28,25,0.55)_38%,rgba(32,28,25,0.05)_68%,rgba(32,28,25,0)_100%)]"
+        className="absolute inset-0 bg-[linear-gradient(0deg,rgba(75,63,42,0.86)_0%,rgba(75,63,42,0.55)_38%,rgba(75,63,42,0.05)_68%,rgba(75,63,42,0)_100%)]"
       />
       <div className="relative mx-auto flex w-full max-w-[1600px] flex-1 flex-col justify-end px-5 pb-12 pt-32 sm:px-8 md:pb-16 lg:px-12">
         <MaskedHeadline as={headingAs} id={headingId} lines={lines} size="lg" />

@@ -1,14 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ivory: #f4f0e8;
-  --color-espresso: #28231f;
-  --color-taupe: #b8ab9b;
-  --color-olive: #737664;
-  --color-olive-deep: #5a5d4d;
-  --color-sand: #ded4c5;
-  --color-ink-soft: #5e5750;
-  --color-line: #d3c9ba;
+  --color-brand-gold: #CA9E67;
+  --color-brand-brown: #775736;
+  --color-brand-beige: #C8AA8B;
+  --color-ivory: #ffffff;
+  --color-espresso: #000000;
+  --color-taupe: #B4A896;
+  --color-olive: #CA9E67;
+  --color-olive-deep: #775736;
+  --color-sand: #CA9E67;
+  --color-ink-soft: #000000;
+  --color-line: #B4A896;
 
   --font-display: "Cormorant Garamond", "Times New Roman", serif;
   --font-sans: "Manrope Variable", "Helvetica Neue", Arial, sans-serif;
@@ -138,6 +141,11 @@ a:focus-visible .arrow-e {
 .nav-link[aria-current="page"]::after {
   transform: scaleX(1);
   transform-origin: left;
+}
+
+.nav-link:hover,
+.nav-link[aria-current="page"] {
+  color: var(--color-espresso);
 }
 
 /* ---------- Image focal points (intentional mobile / desktop crops) ---------- */
@@ -330,15 +338,15 @@ a:focus-visible .arrow-e {
 
 .tone-scope[data-tone="sand"] {
   --bg: var(--color-sand);
-  --fg-soft: #4f4943;
-  --rule: #c4b8a6;
+  --fg-soft: #000000;
+  --rule: #C8AA8B;
 }
 
 .tone-scope[data-tone="espresso"] {
   --bg: var(--color-espresso);
   --fg: var(--color-ivory);
-  --fg-soft: #cfc6b8;
-  --rule: #4a423b;
+  --fg-soft: #C8AA8B;
+  --rule: #706750;
 }
 
 /* ---------- Product image transition ---------- */
@@ -369,7 +377,7 @@ a:focus-visible .product-frame .img-secondary {
   width: 100%;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid #a89b8a;
+  border-bottom: 1px solid var(--color-taupe);
   padding: 0.85rem 0 0.7rem;
   font-size: 1.05rem;
   color: var(--color-espresso);
@@ -384,7 +392,7 @@ a:focus-visible .product-frame .img-secondary {
 }
 
 .field-input[aria-invalid="true"] {
-  border-bottom-color: #8c3b2b;
+  border-bottom-color: #775736;
 }
 
 select.field-input {
@@ -433,4 +441,38 @@ textarea.field-input {
   .scroll-cue-line {
     animation: none !important;
   }
+}
+
+/* Product pricing replaces the main navigation once the page is scrolled. */
+.product-price-bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 55;
+  background: rgb(255 255 255 / 96%);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--color-line);
+  transform: translateY(-110%);
+  visibility: hidden;
+  transition: transform 300ms ease, visibility 300ms;
+}
+@keyframes product-bar-slide-down {
+  from { transform: translateY(-110%); }
+  to { transform: translateY(0); }
+}
+.product-price-bar[data-active="true"] {
+  transform: translateY(0);
+  visibility: visible;
+  animation: product-bar-slide-down 450ms var(--ease-atelier) both;
+}
+body:has(.product-price-bar[data-active="true"]) .site-navigation[data-open="false"] .nav-launcher {
+  transform: translateY(-110%);
+  visibility: hidden;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-price-bar { transition: none; animation: none !important; }
+}
+
+body:has(.product-price-bar[data-active="true"]) [id] {
+  scroll-margin-top: 9rem;
 }

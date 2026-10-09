@@ -4,7 +4,7 @@ import { useActionState } from "react";
 import type { ActionState } from "./actions";
 
 export const adminInput =
-  "mt-2 w-full border border-[#d3c9ba] bg-white px-3 py-2.5 text-sm text-espresso outline-none focus:border-espresso";
+  "mt-2 w-full border border-line bg-white px-3 py-2.5 text-sm text-espresso outline-none focus:border-espresso";
 
 export function Label({ children, htmlFor, hint }: { children: React.ReactNode; htmlFor: string; hint?: string }) {
   return (
@@ -20,7 +20,7 @@ export function Feedback({ state }: { state: ActionState }) {
   return (
     <p
       role={state.error ? "alert" : "status"}
-      className={`border-l-2 pl-3 text-sm ${state.error ? "border-[#8c3b2b] text-[#8c3b2b]" : "border-olive text-olive-deep"}`}
+      className={`border-l-2 pl-3 text-sm ${state.error ? "border-brand-brown text-espresso" : "border-olive text-espresso"}`}
     >
       {state.error ?? state.success}
     </p>

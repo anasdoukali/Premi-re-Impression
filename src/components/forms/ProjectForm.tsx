@@ -58,7 +58,7 @@ function Field({
       {children}
       {hint && !error && <p id={`${id}-hint`} className="mt-2 text-xs text-ink-soft">{hint}</p>}
       {error && (
-        <p id={`${id}-err`} className="mt-2 text-sm text-[#8c3b2b]">
+        <p id={`${id}-err`} className="mt-2 text-sm text-espresso">
           {error}
         </p>
       )}
@@ -278,12 +278,12 @@ export function ProjectForm({
       )}
 
       {formError && (
-        <p role="alert" className="border-l-2 border-[#8c3b2b] pl-4 text-sm text-[#8c3b2b]">
+        <p role="alert" className="border-l-2 border-brand-brown pl-4 text-sm text-espresso">
           {formError}
         </p>
       )}
       {status.state === "error" && (
-        <div ref={resultRef} tabIndex={-1} role="alert" className="border-l-2 border-[#8c3b2b] pl-4 text-sm text-[#8c3b2b] outline-none">
+        <div ref={resultRef} tabIndex={-1} role="alert" className="border-l-2 border-brand-brown pl-4 text-sm text-espresso outline-none">
           {status.message}
         </div>
       )}

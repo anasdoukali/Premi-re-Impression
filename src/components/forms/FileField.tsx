@@ -62,7 +62,7 @@ export function FileField({
         {!uploadOn && " Le transfert de fichiers n’est pas encore activé : nous noterons le nom du fichier et vous indiquerons comment nous le transmettre."}
       </p>
       {error && (
-        <p id={`${id}-err`} className="mt-2 text-sm text-[#8c3b2b]">
+        <p id={`${id}-err`} className="mt-2 text-sm text-espresso">
           {error}
         </p>
       )}

@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { frontendOnly } from "@/server/frontend-mode";
 import { settings } from "@/db/schema";
 import { defaultSettings, type AppSettings } from "@/config/site";
 
@@ -46,7 +46,9 @@ export function normalizeSettings(input: unknown): AppSettings {
 
 /** Reads settings once per request; falls back to defaults if the DB is unavailable. */
 export const getSettings = cache(async (): Promise<AppSettings> => {
+  if (frontendOnly) return defaultSettings;
   try {
+    const { db } = await import("@/db");
     const rows = await db.select().from(settings).where(eq(settings.key, KEY)).limit(1);
     if (!rows[0]) return defaultSettings;
     return normalizeSettings(rows[0].data);
@@ -57,6 +59,7 @@ export const getSettings = cache(async (): Promise<AppSettings> => {
 });
 
 export async function saveSettings(next: AppSettings) {
+  const { db } = await import("@/db");
   const data = normalizeSettings(next);
   await db
     .insert(settings)

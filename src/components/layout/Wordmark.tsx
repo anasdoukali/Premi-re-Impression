@@ -1,19 +1,23 @@
 import Link from "next/link";
+import Image from "next/image";
 
-/** Typographic wordmark — placeholder until the final logo is supplied. */
-export function Wordmark({ className = "", tone = "dark" }: { className?: string; tone?: "dark" | "light" }) {
+/** Original Première Impression brand asset. */
+export function Wordmark({ className = "", tone = "dark", compact = false }: { className?: string; tone?: "dark" | "light"; compact?: boolean }) {
   return (
     <Link
       href="/"
       aria-label="Première Impression — accueil"
-      className={`group inline-flex flex-col leading-none ${tone === "light" ? "text-ivory" : "text-espresso"} ${className}`}
+      className={`group inline-flex shrink-0 items-center justify-center ${className}`}
     >
-      <span className="font-display text-[1.35rem] font-medium uppercase tracking-[0.08em] sm:text-[1.55rem]">
-        Première <span className="serif-italic normal-case tracking-normal">Impression</span>
-      </span>
-      <span className="mt-1 text-[0.56rem] font-semibold uppercase tracking-[0.34em] opacity-70">
-        Printing Solutions Store
-      </span>
+      <Image
+        src="/logo-pis-or.png"
+        width={1398}
+        height={1297}
+        unoptimized
+        alt="Première Impression — Printing Solutions Boutique"
+        priority={tone === "dark"}
+        className={compact ? "block h-[82px] w-[88px] object-contain lg:h-[102px] lg:w-[110px]" : "block h-[76px] w-[80px] object-contain lg:h-[96px] lg:w-[101px]"}
+      />
     </Link>
   );
 }

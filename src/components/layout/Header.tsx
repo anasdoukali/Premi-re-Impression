@@ -2,35 +2,27 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { navigation } from "@/config/site";
 import { useCart } from "@/components/cart/CartProvider";
 import { Wordmark } from "./Wordmark";
 
-function BagIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M5 8h14l-1 12H6L5 8Z" stroke="currentColor" strokeWidth="1.3" />
-      <path d="M9 8V6.5a3 3 0 0 1 6 0V8" stroke="currentColor" strokeWidth="1.3" />
-    </svg>
-  );
+function NavIcon({ kind }: { kind: string }) {
+  return <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {kind === "/" ? <><path d="m3 10 9-7 9 7M5 9v12h5v-7h4v7h5V9" /></> : kind === "/panier" ? <><path d="M5 8h14l-1 13H6L5 8ZM9 8V6a3 3 0 0 1 6 0v2" /></> : kind === "/solutions" ? <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></> : <><path d="M4 21V5l8-3 8 3v16M9 21v-7h6v7M8 7h1m6 0h1M8 10h1m6 0h1" /></>}
+  </svg>;
 }
 
 export function Header() {
   const pathname = usePathname();
   const { items, ready } = useCart();
-  const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+  const reducedMotion = useReducedMotion();
   const count = ready ? items.length : 0;
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 32);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -39,145 +31,67 @@ export function Header() {
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setOpen(false);
-        menuButton.current?.focus();
-      }
+    const trigger = menuButton.current;
+    const previousOverflow = document.body.style.overflow;
+    const surfaces = Array.from(document.querySelectorAll<HTMLElement>("main, footer"));
+    const previousInert = surfaces.map((el) => el.inert);
+    surfaces.forEach((el) => { el.inert = true; });
+    document.body.style.overflow = "hidden";
+    closeButton.current?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+      if (event.key !== "Tab") return;
+      const controls = panelRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+      if (!controls?.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     };
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
     return () => {
       document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
+      surfaces.forEach((el, index) => { el.inert = previousInert[index]; });
+      trigger?.focus();
     };
   }, [open]);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+  const links = [{ href: "/", label: "Accueil" }, ...navigation, { href: "/panier", label: "Panier" }];
+  const transition = { duration: reducedMotion ? 0 : 0.4, ease: [0.2, 0.7, 0.1, 1] as [number, number, number, number] };
 
-  return (
-    <>
-      <a
-        href="#contenu"
-        className="sr-only z-[60] bg-espresso px-4 py-3 text-sm text-ivory focus:not-sr-only focus:fixed focus:left-4 focus:top-4"
-      >
-        Aller au contenu
-      </a>
-      <header
-        className={`fixed inset-x-0 top-0 z-50 transition-[background-color,border-color,padding] duration-500 ${
-          scrolled || open
-            ? "border-b border-line/80 bg-ivory/97 py-3"
-            : "border-b border-transparent bg-transparent py-5"
-        }`}
-      >
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">
-          <Wordmark />
-
-          <nav aria-label="Navigation principale" className="hidden items-center gap-10 md:flex">
-            {navigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={isActive(item.href) ? "page" : undefined}
-                className="nav-link text-[0.8rem] font-semibold uppercase tracking-[0.16em]"
-              >
-                {item.label}
-              </Link>
-            ))}
-            <Link
-              href="/le-lieu#contact"
-              className="group inline-flex items-center gap-2 border border-espresso px-5 py-2.5 text-[0.78rem] font-semibold uppercase tracking-[0.14em] transition-colors duration-500 hover:bg-espresso hover:text-ivory"
-            >
-              Parlons de votre projet <span aria-hidden="true" className="arrow arrow-ne">↗</span>
-            </Link>
-            <Link
-              href="/panier"
-              aria-label={`Panier, ${count} ${count > 1 ? "articles" : "article"}`}
-              aria-current={pathname === "/panier" ? "page" : undefined}
-              className="relative inline-flex h-10 w-10 items-center justify-center"
-            >
-              <BagIcon />
-              {count > 0 && (
-                <span className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-olive-deep px-1 text-[0.6rem] font-bold text-ivory">
-                  {count}
-                </span>
-              )}
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-1 md:hidden">
-            <Link
-              href="/panier"
-              aria-label={`Panier, ${count} ${count > 1 ? "articles" : "article"}`}
-              className="relative inline-flex h-11 w-11 items-center justify-center"
-            >
-              <BagIcon />
-              {count > 0 && (
-                <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-olive-deep px-1 text-[0.6rem] font-bold text-ivory">
-                  {count}
-                </span>
-              )}
-            </Link>
-            <button
-              ref={menuButton}
-              type="button"
-              aria-expanded={open}
-              aria-controls="menu-mobile"
-              onClick={() => setOpen((v) => !v)}
-              className="inline-flex h-11 items-center gap-2 px-2 text-[0.75rem] font-semibold uppercase tracking-[0.16em]"
-            >
-              {open ? "Fermer" : "Menu"}
-              <span aria-hidden="true" className="relative block h-3 w-5">
-                <span className={`absolute left-0 h-px w-5 bg-current transition-transform duration-500 ${open ? "top-1.5 rotate-45" : "top-0.5"}`} />
-                <span className={`absolute left-0 h-px w-5 bg-current transition-transform duration-500 ${open ? "top-1.5 -rotate-45" : "top-2.5"}`} />
-              </span>
-            </button>
-          </div>
-        </div>
-      </header>
-
+  return <>
+    <a href="#contenu" className="sr-only z-[90] bg-espresso px-4 py-3 text-sm text-ivory focus:not-sr-only focus:fixed focus:left-4 focus:top-4">Aller au contenu</a>
+    <header className="site-navigation" data-open={open}>
+      <div className={`nav-launcher fixed left-5 top-5 z-[70] flex items-center sm:left-8 sm:top-6 ${open ? "invisible" : ""}`}>
+        <Wordmark compact className="relative z-10" />
+        <button ref={menuButton} type="button" aria-label="Ouvrir le menu" aria-expanded={open} aria-controls="site-sidebar" onClick={() => setOpen(true)} className="-ml-5 flex h-12 w-20 items-center justify-end rounded-r-2xl border border-espresso/20 bg-white/95 pr-5 text-espresso shadow-sm transition-colors hover:bg-brand-gold">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+        </button>
+      </div>
       <AnimatePresence>
-        {open && (
-          <motion.div
-            id="menu-mobile"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menu"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-40 flex flex-col justify-between bg-ivory px-5 pb-10 pt-28 md:hidden"
-          >
-            <nav aria-label="Navigation mobile" className="flex flex-col gap-2">
-              {[{ href: "/", label: "Accueil" }, ...navigation, { href: "/panier", label: "Panier" }].map((item, i) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: 18 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.06 * i + 0.05, duration: 0.6, ease: [0.2, 0.7, 0.1, 1] }}
-                >
-                  <Link
-                    href={item.href}
-                    onClick={() => setOpen(false)}
-                    aria-current={pathname === item.href ? "page" : undefined}
-                    className="display block py-1 text-[3rem]"
-                  >
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
+        {open && <>
+          <motion.div aria-hidden="true" onClick={() => setOpen(false)} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={transition} className="fixed inset-0 z-[75] bg-black/15 backdrop-blur-[2px]" />
+          <motion.div ref={panelRef} id="site-sidebar" role="dialog" aria-modal="true" aria-label="Navigation" initial={{ x: "-100%" }} animate={{ x: 0 }} exit={{ x: "-100%" }} transition={transition} className="fixed inset-y-0 left-0 z-[80] flex w-[min(320px,calc(100vw-64px))] flex-col border-r border-line bg-white text-black shadow-xl">
+            <Wordmark compact className="absolute right-0 top-5 translate-x-1/2 sm:top-6" />
+            <button ref={closeButton} type="button" aria-label="Fermer le menu" onClick={() => setOpen(false)} className="ml-6 mt-7 flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-brand-gold/20 sm:ml-8">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" aria-hidden="true"><path d="m5 5 14 14M19 5 5 19" /></svg>
+            </button>
+            <nav aria-label="Navigation principale" className="mt-16 flex-1 space-y-3 overflow-y-auto px-6 sm:px-8">
+              {links.map((item) => {
+                const active = pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+                return <Link key={item.href} href={item.href} onClick={() => setOpen(false)} aria-current={active ? "page" : undefined} className={`flex min-h-14 items-center gap-4 rounded-xl px-4 text-base transition-colors hover:bg-brand-gold/20 ${active ? "bg-brand-gold/25 font-semibold" : ""}`}>
+                  <NavIcon kind={item.href} /><span>{item.label}</span>
+                  {item.href === "/panier" && count > 0 && <span className="ml-auto rounded-full bg-brand-gold px-2 py-0.5 text-xs">{count}</span>}
+                </Link>;
+              })}
             </nav>
-            <Link
-              href="/le-lieu#contact"
-              onClick={() => setOpen(false)}
-              className="inline-flex min-h-14 items-center justify-center gap-3 bg-espresso px-6 text-[0.82rem] font-semibold uppercase tracking-[0.14em] text-ivory"
-            >
-              Parlons de votre projet <span aria-hidden="true">↗</span>
-            </Link>
+            <div className="px-6 pb-8 pt-6 sm:px-8">
+              <Link href="/le-lieu#contact" onClick={() => setOpen(false)} className="flex min-h-12 items-center justify-between gap-3 rounded-xl bg-brand-gold px-4 text-sm font-semibold transition-colors hover:bg-brand-gold/80">Parlons de votre projet <span aria-hidden="true">↗</span></Link>
+            </div>
           </motion.div>
-        )}
+        </>}
       </AnimatePresence>
-    </>
-  );
+    </header>
+  </>;
 }

@@ -57,7 +57,7 @@ export function DeleteRequestForm({ id }: { id: number }) {
       }}
     >
       <input type="hidden" name="id" value={id} />
-      <button type="submit" className="text-xs font-semibold uppercase tracking-[0.14em] text-[#8c3b2b] underline underline-offset-4">
+      <button type="submit" className="text-xs font-semibold uppercase tracking-[0.14em] text-espresso underline underline-offset-4">
         Supprimer la demande
       </button>
     </form>

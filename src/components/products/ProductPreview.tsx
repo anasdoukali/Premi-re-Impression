@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { images } from "@/data/images";
+import { configurationPrice, money } from "@/data/pricing";
 import { categoryLabel, formatPrice, type Product } from "@/data/products";
 
 /** Image-first product preview: name, one line, customization, price or action. */
@@ -20,6 +21,7 @@ export function ProductPreview({
   const primary = images[a];
   const secondary = images[b];
   const H = headingLevel;
+  const previewPrice = configurationPrice(product, Object.fromEntries(product.options.map((g) => [g.id, g.choices[0]?.value ?? ""])));
   const action = product.kind === "custom" ? "Demander un devis" : "Configurer";
 
   return (
@@ -54,7 +56,7 @@ export function ProductPreview({
             <p className="mt-3 text-[0.72rem] font-medium uppercase tracking-[0.14em] text-ink-soft">
               {product.customization.join(" · ")}
             </p>
-            {product.price && <p className="mt-3 text-sm font-semibold">{formatPrice(product.price)}</p>}
+            {product.price ? <p className="mt-3 text-sm font-semibold">{formatPrice(product.price)}</p> : previewPrice && <p className="mt-3 text-sm font-semibold">À partir de {money(previewPrice.total, previewPrice.currency)} <span className="font-normal text-ink-soft">· Démonstration</span></p>}
           </div>
           <span className="mt-1 inline-flex shrink-0 items-center gap-2 border-b border-espresso/40 pb-1 text-[0.72rem] font-semibold uppercase tracking-[0.14em] transition-colors group-hover:border-espresso">
             {action} <span aria-hidden="true" className="arrow arrow-e">→</span>

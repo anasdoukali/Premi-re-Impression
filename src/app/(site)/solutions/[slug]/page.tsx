@@ -43,17 +43,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
         <div className="mt-10 grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <div className="lg:sticky lg:top-24">
-              <Reveal variant="image" className="relative aspect-[4/5] overflow-hidden bg-sand sm:aspect-[5/4] lg:aspect-[4/5] lg:max-h-[calc(100vh-8rem)] lg:w-full">
+            <div className="lg:sticky lg:top-40">
+              <Reveal variant="image" className="relative aspect-[8/5] overflow-hidden rounded-2xl bg-sand lg:max-h-[calc(100dvh-14rem)] lg:w-full">
                 <Picture image={product.images[0]} sizes="(min-width: 1024px) 56vw, 100vw" priority />
               </Reveal>
               <div className="mt-3 grid grid-cols-2 gap-3">
-                <div className="relative aspect-[4/3] overflow-hidden bg-sand">
+                <div className="relative aspect-[4/3] max-h-28 overflow-hidden rounded-xl bg-sand">
                   <Picture image={product.images[1]} sizes="(min-width: 1024px) 28vw, 50vw" />
                 </div>
-                <div className="flex flex-col justify-end bg-sand p-5">
+                <div className="flex max-h-28 flex-col justify-center rounded-xl bg-sand p-4">
                   <p className="eyebrow text-ink-soft">Personnalisable</p>
-                  <p className="mt-2 font-display text-xl leading-snug">{product.customization.join(" · ")}</p>
+                  <p className="mt-2 font-display text-lg leading-snug">{product.customization.join(" · ")}</p>
                 </div>
               </div>
             </div>
